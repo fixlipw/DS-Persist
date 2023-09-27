@@ -1,14 +1,17 @@
 package com.ufc.ds_persist.view;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicBorders;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
-public class Main extends JFrame {
+import com.formdev.flatlaf.*;
+
+public class Main extends JFrame implements FileStatusObserver {
+
     private final JLabel optionInfoLabel;
     private final JButton CSVButton;
     private final JButton JSONXMLButton;
@@ -25,6 +28,9 @@ public class Main extends JFrame {
 
         GridBagConstraints gbc = new GridBagConstraints();
 
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 5;
@@ -33,41 +39,37 @@ public class Main extends JFrame {
         optionInfoLabel.setHorizontalAlignment(JLabel.CENTER);
         add(optionInfoLabel, gbc);
 
-        Dimension rv = new Dimension(0,0);
-
         gbc.gridwidth = 1;
         gbc.gridy++;
         CSVButton = new JButton("CSV");
-        CSVButton.setSize(rv);
         add(CSVButton, gbc);
 
         gbc.gridx++;
         JSONXMLButton = new JButton("JSON/XML");
-        JSONXMLButton.setSize(rv);
         add(JSONXMLButton, gbc);
 
         gbc.gridx++;
         ZIPButton = new JButton("ZIP");
-        ZIPButton.setSize(rv);
         add(ZIPButton, gbc);
 
         gbc.gridx++;
         HASHButton = new JButton("Hash");
-        HASHButton.setSize(rv);
         add(HASHButton, gbc);
 
         gbc.gridwidth = 5;
         gbc.gridx = 0;
         gbc.gridy++;
         csvMessage = new JLabel("Nenhum arquivo CSV carregado", SwingConstants.CENTER);
-        csvMessage.setBorder(BasicBorders.getTextFieldBorder());
         csvMessage.setHorizontalAlignment(JLabel.CENTER);
+        csvMessage.setVerticalAlignment(JLabel.BOTTOM);
+        csvMessage.setForeground(Color.RED);
         add(csvMessage, gbc);
 
         CSVButton.addActionListener( e -> {
 
             CSVFrame csvFrame = new CSVFrame();
-            csvFrame.setSize(337, 337);
+            csvFrame.setSize(350, 337);
+            csvFrame.addObserver(Main.this);
             csvFrame.setVisible(true);
 
             csvFrame.addWindowListener(new WindowAdapter() {
@@ -148,11 +150,20 @@ public class Main extends JFrame {
         return csvFile;
     }
 
+    @Override
+    public void updateFileStautsLabel(String fileName, Color color) {
+        this.csvMessage.setForeground(color);
+        this.csvMessage.setText("Arquivo CSV selecionado: " + fileName);
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
+            FlatIntelliJLaf.setup();
             Main gui = new Main();
 
         });
     }
+
+
 }
