@@ -82,6 +82,7 @@ public class CSVFrame extends JFrame {
 
                             dispose();
                         } else if (e.getActionCommand().equals(JFileChooser.CANCEL_SELECTION)) {
+                            setSize(337, 337);
                             tabbedPane.setSelectedIndex(-1);
                         }
 
@@ -134,7 +135,7 @@ public class CSVFrame extends JFrame {
                         int pagesQtd = Integer.parseInt(pagesQtdField.getText());
                         BookType type = (BookType) box.getSelectedItem();
 
-                        if (!controller.getCSVFile().exists()) {
+                        if (controller.getCSVFile() == null) {
 
                             JOptionPane.showMessageDialog(null,
                                     new String("Arquivo CSV ainda não foi carregado.".getBytes(), StandardCharsets.UTF_8),
