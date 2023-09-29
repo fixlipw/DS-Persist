@@ -18,10 +18,6 @@ public class Leitura {
     @JacksonXmlProperty(localName = "reading_type")
     private BookType type;
 
-    public Leitura() {
-
-    }
-
     public Leitura(String title, String authorName, int pagesQtd, BookType type) {
         this.title = title;
         this.authorName = authorName;

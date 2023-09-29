@@ -5,19 +5,20 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import com.formdev.flatlaf.*;
 
-public class Main extends JFrame implements FileStatusObserver {
+public class Main extends JFrame implements FileStatusObserver, FileObserver {
 
-    private final JLabel optionInfoLabel;
-    private final JButton CSVButton;
-    private final JButton JSONXMLButton;
-    private final JButton ZIPButton;
-    private final JButton HASHButton;
-    private JLabel csvMessage;
+    private static final String ERROR_NO_CSV_LOADED = "Nenhum arquivo CSV carregado";
+    private static final String ERROR_TITLE = "Erro";
+
+    private final JLabel csvMessage;
 
     private File csvFile;
 
@@ -35,25 +36,25 @@ public class Main extends JFrame implements FileStatusObserver {
         gbc.gridy = 0;
         gbc.gridwidth = 5;
 
-        optionInfoLabel = new JLabel(new String("Selecione uma opção: ".getBytes(), StandardCharsets.UTF_8));
+        JLabel optionInfoLabel = new JLabel(new String("Selecione uma opção: ".getBytes(), StandardCharsets.UTF_8));
         optionInfoLabel.setHorizontalAlignment(JLabel.CENTER);
         add(optionInfoLabel, gbc);
 
         gbc.gridwidth = 1;
         gbc.gridy++;
-        CSVButton = new JButton("CSV");
+        JButton CSVButton = new JButton("CSV");
         add(CSVButton, gbc);
 
         gbc.gridx++;
-        JSONXMLButton = new JButton("JSON/XML");
+        JButton JSONXMLButton = new JButton("JSON/XML");
         add(JSONXMLButton, gbc);
 
         gbc.gridx++;
-        ZIPButton = new JButton("ZIP");
+        JButton ZIPButton = new JButton("ZIP");
         add(ZIPButton, gbc);
 
         gbc.gridx++;
-        HASHButton = new JButton("Hash");
+        JButton HASHButton = new JButton("Hash");
         add(HASHButton, gbc);
 
         gbc.gridwidth = 5;
@@ -65,11 +66,13 @@ public class Main extends JFrame implements FileStatusObserver {
         csvMessage.setForeground(Color.RED);
         add(csvMessage, gbc);
 
-        CSVButton.addActionListener( e -> {
+        CSVButton.addActionListener(e -> {
 
             CSVFrame csvFrame = new CSVFrame();
             csvFrame.setSize(350, 337);
-            csvFrame.addObserver(Main.this);
+            csvFrame.setLocationRelativeTo(Main.this);
+            csvFrame.addObserver((FileObserver) Main.this);
+            csvFrame.addObserver((FileStatusObserver) Main.this);
             csvFrame.setVisible(true);
 
             csvFrame.addWindowListener(new WindowAdapter() {
@@ -83,14 +86,20 @@ public class Main extends JFrame implements FileStatusObserver {
                 public void windowClosing(WindowEvent e) {
                     Main.this.setVisible(true);
                 }
+
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    Main.this.setVisible(true);
+                }
             });
 
         });
 
-        JSONXMLButton.addActionListener( e -> {
+        JSONXMLButton.addActionListener(e -> {
 
             JSONXMLFrame jsonxmlFrame = new JSONXMLFrame();
             jsonxmlFrame.setSize(337, 337);
+            jsonxmlFrame.setLocationRelativeTo(Main.this);
             jsonxmlFrame.setVisible(true);
 
             jsonxmlFrame.addWindowListener(new WindowAdapter() {
@@ -107,10 +116,11 @@ public class Main extends JFrame implements FileStatusObserver {
 
         });
 
-        ZIPButton.addActionListener( e -> {
+        ZIPButton.addActionListener(e -> {
 
             ZIPFrame zipFrame = new ZIPFrame();
             zipFrame.setSize(337, 337);
+            zipFrame.setLocationRelativeTo(Main.this);
             zipFrame.setVisible(true);
 
             zipFrame.addWindowListener(new WindowAdapter() {
@@ -127,27 +137,45 @@ public class Main extends JFrame implements FileStatusObserver {
 
         });
 
-        HASHButton.addActionListener( e -> {
+        HASHButton.addActionListener(e -> {
 
             if (csvFile == null) {
-                JOptionPane.showMessageDialog(null, "Nenhum arquivo CSV carregado", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+            } else {
+
+                JTextArea ta = new JTextArea(1, 10);
+
+                byte[] data = new byte[(int) csvFile.length()];
+                byte[] hash = new byte[0];
+                try ( FileInputStream fis = new FileInputStream(csvFile)){
+                    int a = fis.read(data);
+                    hash = MessageDigest.getInstance("SHA256").digest(data);
+
+                } catch (NoSuchAlgorithmException | IOException ignore) { }
+
+                StringBuilder hashCSVFile = new StringBuilder();
+                for (byte b : hash) {
+                    hashCSVFile.append(String.format("%02x", b));
+                }
+
+                ta.append(hashCSVFile.toString());
+                ta.setWrapStyleWord(true);
+                ta.setLineWrap(false);
+                ta.setCaretPosition(0);
+                ta.setEditable(false);
+
+                JOptionPane.showMessageDialog(null, ta, "Hash calculado com sucesso!", JOptionPane.PLAIN_MESSAGE);
+
             }
 
         });
 
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(337, 337);
+        setSize(337, 200);
+        setLocationRelativeTo(null);
         setVisible(true);
 
-    }
-
-    public void setCsvFile(File csvFile) {
-        this.csvFile = csvFile;
-    }
-
-    public File getCsvFile() {
-        return csvFile;
     }
 
     @Override
@@ -156,11 +184,16 @@ public class Main extends JFrame implements FileStatusObserver {
         this.csvMessage.setText("Arquivo CSV selecionado: " + fileName);
     }
 
+    @Override
+    public void setFile(File file) {
+        this.csvFile = file;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
             FlatIntelliJLaf.setup();
-            Main gui = new Main();
+            new Main();
 
         });
     }
