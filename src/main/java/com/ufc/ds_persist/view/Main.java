@@ -12,6 +12,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import com.formdev.flatlaf.*;
+import com.ufc.ds_persist.view.interfaces.FileObserver;
+import com.ufc.ds_persist.view.interfaces.FileStatusObserver;
 
 public class Main extends JFrame implements FileStatusObserver, FileObserver {
 
@@ -169,7 +171,6 @@ public class Main extends JFrame implements FileStatusObserver, FileObserver {
             }
 
         });
-
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(337, 200);

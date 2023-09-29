@@ -1,4 +1,4 @@
-package com.ufc.ds_persist.view;
+package com.ufc.ds_persist.view.interfaces;
 
 import java.awt.*;
 
