@@ -1,4 +1,4 @@
-package com.ufc.ds_persist.view.interfaces;
+package com.ufc.ds_persist.view.observers;
 
 import java.io.File;
 

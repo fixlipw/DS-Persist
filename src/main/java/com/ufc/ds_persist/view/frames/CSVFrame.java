@@ -1,11 +1,11 @@
-package com.ufc.ds_persist.view;
+package com.ufc.ds_persist.view.frames;
 
 import com.ufc.ds_persist.controller.BookController;
 import com.ufc.ds_persist.enumeration.BookType;
 import com.ufc.ds_persist.model.Leitura;
 import com.ufc.ds_persist.util.CSVutil;
-import com.ufc.ds_persist.view.interfaces.FileObserver;
-import com.ufc.ds_persist.view.interfaces.FileStatusObserver;
+import com.ufc.ds_persist.view.observers.FileObserver;
+import com.ufc.ds_persist.view.observers.FileStatusObserver;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
