@@ -6,10 +6,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.formdev.flatlaf.*;
 import com.ufc.ds_persist.view.interfaces.FileObserver;
@@ -99,44 +102,64 @@ public class Main extends JFrame implements FileStatusObserver, FileObserver {
 
         JSONXMLButton.addActionListener(e -> {
 
-            JSONXMLFrame jsonxmlFrame = new JSONXMLFrame();
-            jsonxmlFrame.setSize(337, 337);
-            jsonxmlFrame.setLocationRelativeTo(Main.this);
-            jsonxmlFrame.setVisible(true);
+            if (csvFile == null) {
+                JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+            } else {
+                JSONXMLFrame jsonxmlFrame = new JSONXMLFrame();
+                jsonxmlFrame.setSize(337, 150);
+                jsonxmlFrame.setLocationRelativeTo(Main.this);
+                jsonxmlFrame.setVisible(true);
 
-            jsonxmlFrame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                    Main.this.setVisible(false);
-                }
+                jsonxmlFrame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowOpened(WindowEvent e) {
+                        Main.this.setVisible(false);
+                    }
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    Main.this.setVisible(true);
-                }
-            });
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        Main.this.setVisible(true);
+                    }
+                });
+            }
 
         });
 
         ZIPButton.addActionListener(e -> {
 
-            ZIPFrame zipFrame = new ZIPFrame();
-            zipFrame.setSize(337, 337);
-            zipFrame.setLocationRelativeTo(Main.this);
-            zipFrame.setVisible(true);
+            if (csvFile == null) {
+                JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+            } else {
 
-            zipFrame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowOpened(WindowEvent e) {
-                    Main.this.setVisible(false);
+                int last = csvFile.getName().lastIndexOf(".");
+                String zipName = csvFile.getName().substring(0, last) + ".zip";
+                String directory = csvFile.getParent();
+
+                File newZipFile = new File(directory, zipName);
+
+                try (
+                    FileOutputStream fos = new FileOutputStream(newZipFile);
+                    ZipOutputStream zipOut = new ZipOutputStream(fos);
+                    FileInputStream fis = new FileInputStream(csvFile)
+                ) {
+                    ZipEntry zipEntry = new ZipEntry(csvFile.getName());
+                    zipOut.putNextEntry(zipEntry);
+
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(buffer)) != -1) {
+                        zipOut.write(buffer, 0, bytesRead);
+                    }
+
+                    System.out.println("File zipped successfully.");
+                } catch (IOException exception) {
+                    System.err.println(exception.getMessage());
                 }
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    Main.this.setVisible(true);
-                }
-            });
+                JOptionPane.showMessageDialog(null, "Arquivo CSV compactado com sucesso!",
+                        new String("Compactação concluída!".getBytes(), StandardCharsets.UTF_8), JOptionPane.INFORMATION_MESSAGE);
 
+            }
         });
 
         HASHButton.addActionListener(e -> {
@@ -150,7 +173,10 @@ public class Main extends JFrame implements FileStatusObserver, FileObserver {
                 byte[] data = new byte[(int) csvFile.length()];
                 byte[] hash = new byte[0];
                 try ( FileInputStream fis = new FileInputStream(csvFile)){
-                    int a = fis.read(data);
+                    int a = 0;
+                    while (a != -1) {
+                        a = fis.read(data, 0, data.length);
+                    }
                     hash = MessageDigest.getInstance("SHA256").digest(data);
 
                 } catch (NoSuchAlgorithmException | IOException ignore) { }
