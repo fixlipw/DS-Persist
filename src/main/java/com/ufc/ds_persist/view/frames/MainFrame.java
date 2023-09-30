@@ -26,6 +26,7 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
     private File csvFile;
 
     public MainFrame() {
+      
         super("Menu Principal");
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -45,15 +46,19 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         setSize(337, 200);
         setLocationRelativeTo(null);
         setVisible(true);
+      
     }
 
     private void addOptionInfoLabel(GridBagConstraints gbc) {
+      
         JLabel optionInfoLabel = new JLabel(new String("Selecione uma opção: ".getBytes(), StandardCharsets.UTF_8));
         optionInfoLabel.setHorizontalAlignment(JLabel.CENTER);
         add(optionInfoLabel, gbc);
+      
     }
 
     private void addOptionButtons(GridBagConstraints gbc) {
+      
         gbc.gridwidth = 1;
         gbc.gridy++;
         JButton CSVButton = new JButton("CSV");
@@ -72,9 +77,11 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         add(HASHButton, gbc);
 
         addActionListeners(CSVButton, JSONXMLButton, ZIPButton, HASHButton);
+      
     }
 
     private void addCsvMessageLabel(GridBagConstraints gbc) {
+      
         gbc.gridwidth = 5;
         gbc.gridx = 0;
         gbc.gridy++;
@@ -83,16 +90,20 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         csvMessage.setVerticalAlignment(JLabel.BOTTOM);
         csvMessage.setForeground(Color.RED);
         add(csvMessage, gbc);
+      
     }
 
     private void addActionListeners(JButton CSVButton, JButton JSONXMLButton, JButton ZIPButton, JButton HASHButton) {
+        
         CSVButton.addActionListener(e -> handleCSVButton());
         JSONXMLButton.addActionListener(e -> handleJSONXMLButton());
         ZIPButton.addActionListener(e -> handleZIPButton());
         HASHButton.addActionListener(e -> handleHASHButton());
+      
     }
 
     private void handleCSVButton() {
+      
         CSVFrame csvFrame = new CSVFrame();
         csvFrame.setSize(350, 337);
         csvFrame.setLocationRelativeTo(MainFrame.this);
@@ -116,9 +127,11 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
                 MainFrame.this.setVisible(true);
             }
         });
+      
     }
 
     private void handleJSONXMLButton() {
+      
         if (csvFile == null) {
             JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
         } else {
@@ -144,9 +157,11 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
                 }
             });
         }
+      
     }
 
     private void handleZIPButton() {
+      
         if (csvFile == null) {
             JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
         } else {
@@ -161,6 +176,7 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
                 ZipOutputStream zipOut = new ZipOutputStream(fos);
                 FileInputStream fis = new FileInputStream(csvFile)
             ) {
+              
                 ZipEntry zipEntry = new ZipEntry(csvFile.getName());
                 zipOut.putNextEntry(zipEntry);
 
@@ -171,36 +187,51 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
                 }
 
                 System.out.println("File zipped successfully.");
+              
             } catch (IOException exception) {
+              
                 System.err.println(exception.getMessage());
+              
             }
 
             JOptionPane.showMessageDialog(null, "Arquivo CSV compactado com sucesso!",
                     new String("Compactação concluída!".getBytes(), StandardCharsets.UTF_8), JOptionPane.INFORMATION_MESSAGE);
         }
+      
     }
 
     private void handleHASHButton() {
+      
         if (csvFile == null) {
+          
             JOptionPane.showMessageDialog(null, ERROR_NO_CSV_LOADED, ERROR_TITLE, JOptionPane.ERROR_MESSAGE);
+        
         } else {
+          
             JTextArea hashTextArea = new JTextArea(1, 10);
 
             byte[] data = new byte[(int) csvFile.length()];
             byte[] hash = new byte[0];
+          
             try (FileInputStream fis = new FileInputStream(csvFile)) {
+              
                 int a = 0;
                 while (a != -1) {
+                  
                     a = fis.read(data, 0, data.length);
+                  
                 }
+              
                 hash = MessageDigest.getInstance("SHA256").digest(data);
 
-            } catch (NoSuchAlgorithmException | IOException ignore) {
-            }
+            } catch (NoSuchAlgorithmException | IOException ignore) {}
 
             StringBuilder hashCSVFile = new StringBuilder();
+          
             for (byte b : hash) {
+              
                 hashCSVFile.append(String.format("%02x", b));
+              
             }
 
             hashTextArea.append(hashCSVFile.toString());
@@ -211,16 +242,21 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
 
             JOptionPane.showMessageDialog(null, hashTextArea, "Hash calculado com sucesso!", JOptionPane.PLAIN_MESSAGE);
         }
+      
     }
 
     @Override
     public void updateFileStautsLabel(String fileName, Color color) {
+      
         this.csvMessage.setForeground(color);
         this.csvMessage.setText("Arquivo CSV selecionado: " + fileName);
+      
     }
 
     @Override
     public void setFile(File file) {
+      
         this.csvFile = file;
+      
     }
 }
