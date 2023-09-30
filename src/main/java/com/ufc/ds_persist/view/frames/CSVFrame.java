@@ -84,16 +84,13 @@ public class CSVFrame extends JFrame {
 
                             dispose();
                         } else if (e.getActionCommand().equals(JFileChooser.CANCEL_SELECTION)) {
-                            setSize(337, 337);
-                            tabbedPane.setSelectedIndex(-1);
+                            dispose();
                         }
-
                     });
-
                 }
 
                 case 1 -> {
-                    setSize(337,337);
+                    setSize(350,337);
 
                     JButton addButton = new JButton("Adicionar");
 
