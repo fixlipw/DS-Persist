@@ -254,21 +254,30 @@ public class CSVFrame extends JFrame {
     }
 
     public void addObserver(FileObserver observer) {
+      
         fileObservers.add(observer);
+      
     }
+  
     public void addObserver(FileStatusObserver observer) {
+      
         statusobservers.add(observer);
+      
     }
 
     private void notifyObservers(String message) {
+      
         for (FileStatusObserver observer : statusobservers) {
             observer.updateFileStautsLabel(message, Color.MAGENTA);
         }
+      
     }
 
     private void notifyObservers(File file) {
+      
         for (FileObserver observer : fileObservers) {
             observer.setFile(file);
         }
+      
     }
 }
