@@ -1,6 +1,7 @@
 package com.ufc.ds_persist.view.frames;
 
 import com.ufc.ds_persist.controller.BookController;
+import com.ufc.ds_persist.enumeration.BookStatus;
 import com.ufc.ds_persist.enumeration.BookType;
 import com.ufc.ds_persist.model.Leitura;
 import com.ufc.ds_persist.util.CSVutil;
@@ -15,11 +16,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class CSVFrame extends JFrame {
 
@@ -34,13 +36,16 @@ public class CSVFrame extends JFrame {
 
     private JTextField titleField;
     private JTextField authorNameField;
-    private  JTextField pagesQtdField;
-    private JComboBox<BookType> box;
+    private JTextField pagesQtdField;
+    private JComboBox<BookType> typeBox;
+    private JComboBox<BookStatus> statusBox;
     private JFileChooser fileChooser;
 
     public CSVFrame() {
 
         super(new String("Menu Principal → CSV".getBytes(), StandardCharsets.UTF_8));
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("book-marked.png")));
+        setIconImage(icon.getImage());
         initComponents();
         setTabbedPane();
         setVisible(true);
@@ -57,7 +62,9 @@ public class CSVFrame extends JFrame {
         titleField = new JTextField();
         authorNameField = new JTextField();
         pagesQtdField = new JTextField("0");
-        box = new JComboBox<>(BookType.values());
+        typeBox = new JComboBox<>(BookType.values());
+        statusBox = new JComboBox<>(BookStatus.values());
+
         fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
     }
@@ -97,7 +104,7 @@ public class CSVFrame extends JFrame {
 
         insertPannel.setLayout(new GridBagLayout());
 
-        setSize(350,337);
+        setSize(350, 337);
 
         JButton addButton = new JButton("Adicionar");
 
@@ -126,7 +133,13 @@ public class CSVFrame extends JFrame {
         gbc.gridy++;
         insertPannel.add(new JLabel("Tipo:"), gbc);
         gbc.gridx++;
-        insertPannel.add(box, gbc);
+        insertPannel.add(typeBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        insertPannel.add(new JLabel("Status"), gbc);
+        gbc.gridx++;
+        insertPannel.add(statusBox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
@@ -150,9 +163,9 @@ public class CSVFrame extends JFrame {
         List<String[]> csvData = CSVutil.readCSV(controller.getCSVFilePath());
 
         String[] columnHeaders = {new String("Título".getBytes(), StandardCharsets.UTF_8), "Nome do Autor",
-                new String("Quantidade de Páginas".getBytes(), StandardCharsets.UTF_8), "Tipo"};
+                new String("Quantidade de Páginas".getBytes(), StandardCharsets.UTF_8), "Tipo", "Status"};
 
-        Object[][] tableData = new Object[csvData.size()][4];
+        Object[][] tableData = new Object[csvData.size()][5];
         for (int i = 0; i < csvData.size(); i++) {
             List<String> row = Arrays.asList(csvData.get(i));
             for (int j = 0; j < row.size(); j++) {
@@ -201,7 +214,7 @@ public class CSVFrame extends JFrame {
 
     }
 
-     private void handleFileChooserAction(ActionEvent e) {
+    private void handleFileChooserAction(ActionEvent e) {
 
         if (e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) {
             notifyObservers(fileChooser.getSelectedFile().getName());
@@ -225,8 +238,25 @@ public class CSVFrame extends JFrame {
 
         String title = titleField.getText();
         String authorName = authorNameField.getText();
-        int pagesQtd = Integer.parseInt(pagesQtdField.getText());
-        BookType type = (BookType) box.getSelectedItem();
+
+        int pagesQtd;
+        try {
+            pagesQtd = Integer.parseInt(pagesQtdField.getText());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null,
+                    new String("Número de páginas inválido.".getBytes(), StandardCharsets.UTF_8),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+
+            titleField.setText("");
+            authorNameField.setText("");
+            pagesQtdField.setText("0");
+            typeBox.setSelectedIndex(-1);
+            statusBox.setSelectedItem(-1);
+            return;
+        }
+
+        BookType type = (BookType) typeBox.getSelectedItem();
+        BookStatus status = (BookStatus) statusBox.getSelectedItem();
 
         if (controller.getCSVFile() == null) {
 
@@ -234,15 +264,16 @@ public class CSVFrame extends JFrame {
                     new String("Arquivo CSV ainda não foi carregado.".getBytes(), StandardCharsets.UTF_8),
                     "Erro", JOptionPane.ERROR_MESSAGE);
 
-        } else if (!title.isEmpty() && !authorName.isEmpty() && box.getSelectedItem() != null) {
+        } else if (!title.isEmpty() && !authorName.isEmpty() && typeBox.getSelectedItem() != null && statusBox.getSelectedItem() != null) {
 
-            Leitura leitura = new Leitura(title, authorName, pagesQtd, type);
+            Leitura leitura = new Leitura(title, authorName, pagesQtd, type, status);
             controller.addLeitura(leitura);
             notifyObservers(controller.getCSVFile());
             titleField.setText("");
             authorNameField.setText("");
             pagesQtdField.setText("0");
-            box.setSelectedIndex(-1);
+            typeBox.setSelectedIndex(-1);
+            statusBox.setSelectedItem(-1);
 
             JOptionPane.showMessageDialog(null, "Elemento adicionado com sucesso!",
                     "Sucesso", JOptionPane.INFORMATION_MESSAGE);
@@ -256,6 +287,7 @@ public class CSVFrame extends JFrame {
     public void addObserver(FileObserver observer) {
         fileObservers.add(observer);
     }
+
     public void addObserver(FileStatusObserver observer) {
         statusobservers.add(observer);
     }

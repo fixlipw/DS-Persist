@@ -1,5 +1,6 @@
 package com.ufc.ds_persist.controller;
 
+import com.ufc.ds_persist.enumeration.BookStatus;
 import com.ufc.ds_persist.enumeration.BookType;
 import com.ufc.ds_persist.model.Leitura;
 import com.ufc.ds_persist.util.CSVutil;
@@ -13,24 +14,21 @@ public class BookController {
 
     private final List<Leitura> leituras = new ArrayList<>();
     private String csvFilePath;
+
     private BookController() {
 
-    }
-
-    private static final class InstanceHolder {
-        private static final BookController instance = new BookController();
     }
 
     public static BookController getInstance() {
         return InstanceHolder.instance;
     }
 
-    public void setCSVFilePath(String filePath) {
-        this.csvFilePath = filePath;
-    }
-
     public String getCSVFilePath() {
         return csvFilePath;
+    }
+
+    public void setCSVFilePath(String filePath) {
+        this.csvFilePath = filePath;
     }
 
     public File getCSVFile() {
@@ -47,12 +45,13 @@ public class BookController {
             List<String[]> csvData = CSVutil.readCSV(file);
             leituras.clear();
             for (String[] row : csvData) {
-                if (row.length == 4) {
+                if (row.length == 5) {
                     String title = row[0];
                     String authorName = row[1];
                     int pagesQtd = Integer.parseInt(row[2]);
                     String type = row[3];
-                    Leitura leitura = new Leitura(title, authorName, pagesQtd, BookType.valueOf(type));
+                    String status = row[4];
+                    Leitura leitura = new Leitura(title, authorName, pagesQtd, BookType.valueOf(type), BookStatus.valueOf(status));
                     leituras.add(leitura);
                 }
             }
@@ -74,17 +73,23 @@ public class BookController {
             List<String[]> csvData = new ArrayList<>();
             for (Leitura leitura : leituras) {
                 String[] row = new String[]{
-                    leitura.getTitle(),
-                    leitura.getAuthorName(),
-                    String.valueOf(leitura.getPagesQtd()),
-                    leitura.getType().name()
+                        leitura.getTitle(),
+                        leitura.getAuthorName(),
+                        String.valueOf(leitura.getPagesQtd()),
+                        leitura.getType().name(),
+                        leitura.getStatus().name()
                 };
                 csvData.add(row);
             }
             CSVutil.writeCSV(csvFilePath, csvData);
         }
     }
+
     public void clearLeituras() {
         leituras.clear();
+    }
+
+    private static final class InstanceHolder {
+        private static final BookController instance = new BookController();
     }
 }

@@ -54,7 +54,7 @@ public class CSVutil {
 
     public static void writeCSV(String filepath, List<String[]> data) {
 
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filepath))) {
 
             for (String[] row : data) {
                 String line = String.join(",", row);
@@ -69,18 +69,20 @@ public class CSVutil {
     }
 
     public static String leituraToCSVRow(Leitura leitura) {
-    if (leitura != null) {
-        String title = escapeCSVValue(leitura.getTitle());
-        String authorName = escapeCSVValue(leitura.getAuthorName());
-        String type = leitura.getType().toString();
+        if (leitura != null) {
+            String title = escapeCSVValue(leitura.getTitle());
+            String authorName = escapeCSVValue(leitura.getAuthorName());
+            String type = leitura.getType().toString();
+            String status = leitura.getStatus().toString();
 
-        return ESCAPE + title + ESCAPE + SEPARATOR +
-                ESCAPE + authorName + ESCAPE + SEPARATOR +
-                leitura.getPagesQtd() + SEPARATOR + ESCAPE +
-                type + ESCAPE;
+            return ESCAPE + title + ESCAPE + SEPARATOR +
+                    ESCAPE + authorName + ESCAPE + SEPARATOR +
+                    leitura.getPagesQtd() + SEPARATOR +
+                    ESCAPE + type + ESCAPE + SEPARATOR +
+                    ESCAPE + status + ESCAPE;
+        }
+        return null;
     }
-    return null;
-}
 
     public static void addCSVRow(String filepath, String[] rowContent) {
         addCSVRow(Paths.get(filepath).toFile(), rowContent);

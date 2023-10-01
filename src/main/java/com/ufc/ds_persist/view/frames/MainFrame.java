@@ -1,5 +1,8 @@
 package com.ufc.ds_persist.view.frames;
 
+import com.ufc.ds_persist.view.observers.FileObserver;
+import com.ufc.ds_persist.view.observers.FileStatusObserver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -11,11 +14,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import com.ufc.ds_persist.view.observers.FileObserver;
-import com.ufc.ds_persist.view.observers.FileStatusObserver;
 
 public class MainFrame extends JFrame implements FileStatusObserver, FileObserver {
 
@@ -27,6 +28,9 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
 
     public MainFrame() {
         super("Menu Principal");
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("book-marked.png")));
+        setIconImage(icon.getImage());
+
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -157,9 +161,9 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
             File newZipFile = new File(directory, zipName);
 
             try (
-                FileOutputStream fos = new FileOutputStream(newZipFile);
-                ZipOutputStream zipOut = new ZipOutputStream(fos);
-                FileInputStream fis = new FileInputStream(csvFile)
+                    FileOutputStream fos = new FileOutputStream(newZipFile);
+                    ZipOutputStream zipOut = new ZipOutputStream(fos);
+                    FileInputStream fis = new FileInputStream(csvFile)
             ) {
                 ZipEntry zipEntry = new ZipEntry(csvFile.getName());
                 zipOut.putNextEntry(zipEntry);
@@ -170,7 +174,7 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
                     zipOut.write(buffer, 0, bytesRead);
                 }
 
-                System.out.println("File zipped successfully.");
+                System.out.println("Arquivo CSV compactado com sucesso!");
             } catch (IOException exception) {
                 System.err.println(exception.getMessage());
             }
