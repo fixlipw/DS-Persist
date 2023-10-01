@@ -190,12 +190,16 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         } else {
             JTextArea hashTextArea = new JTextArea(1, 10);
 
-            byte[] data = new byte[(int) csvFile.length()];
+            int fileLength = (csvFile.length() == 0L ? 0 : (int) csvFile.length());
+
+            byte[] data = new byte[fileLength];
             byte[] hash = new byte[0];
             try (FileInputStream fis = new FileInputStream(csvFile)) {
-                int a = 0;
-                while (a != -1) {
-                    a = fis.read(data, 0, data.length);
+                if (data.length > 0) {
+                    int a = 0;
+                    while (a != -1) {
+                        a = fis.read(data, 0, data.length);
+                    }
                 }
                 hash = MessageDigest.getInstance("SHA256").digest(data);
 
