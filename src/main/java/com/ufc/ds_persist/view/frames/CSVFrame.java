@@ -200,7 +200,7 @@ public class CSVFrame extends JFrame {
                     );
                 } else if (controller.getCSVFilePath() != null && controller.getLeituras().isEmpty()) {
                     JOptionPane.showOptionDialog(
-                            this, new String("Arquivo não contêm nenhuma leitura.".getBytes(), StandardCharsets.UTF_8),
+                            this, new String("Arquivo não contém nenhuma leitura.".getBytes(), StandardCharsets.UTF_8),
                             "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null
                     );
                 } else {
