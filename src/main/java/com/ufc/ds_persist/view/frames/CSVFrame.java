@@ -153,7 +153,7 @@ public class CSVFrame extends JFrame {
 
     private void setShowPannel() {
 
-        showPannel.setLayout(new GridBagLayout());
+        showPannel.setLayout(new FlowLayout());
         showPannel.setSize(500, 515);
 
     }
@@ -204,9 +204,16 @@ public class CSVFrame extends JFrame {
                             "Aviso", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null
                     );
                 } else {
+
+                    JOptionPane.showOptionDialog(
+                            this, new String(("Quantidade de elementos: " + controller.getLeituras().size()).getBytes(), StandardCharsets.UTF_8),
+                            "Ok", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null
+                    );
+
                     setSize(500, 515);
                     showPannel.removeAll();
                     setShowPannelTable();
+
                 }
             }
             default -> setSize(350, 337);
