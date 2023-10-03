@@ -22,6 +22,7 @@ public class JSONXMLFrame extends JFrame {
         super(new String(("Menu Principal → JSON/XML").getBytes(), StandardCharsets.UTF_8));
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("book-marked.png")));
         setIconImage(icon.getImage());
+        setResizable(false);
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();

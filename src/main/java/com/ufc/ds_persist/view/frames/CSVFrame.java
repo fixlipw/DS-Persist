@@ -48,6 +48,7 @@ public class CSVFrame extends JFrame {
         setIconImage(icon.getImage());
         initComponents();
         setTabbedPane();
+        setResizable(false);
         setVisible(true);
 
     }
@@ -153,8 +154,8 @@ public class CSVFrame extends JFrame {
 
     private void setShowPannel() {
 
-        showPannel.setLayout(new FlowLayout());
-        showPannel.setSize(500, 515);
+        showPannel.setLayout(new GridBagLayout());
+        showPannel.setSize(500, 550);
 
     }
 
@@ -180,10 +181,19 @@ public class CSVFrame extends JFrame {
             }
         };
 
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JLabel countLabel = new JLabel("Quantidade de Elementos: " + controller.getLeituras().size());
+        showPannel.add(countLabel, gbc);
+
         JTable table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        showPannel.add(scrollPane);
+        gbc.gridy++;
+        showPannel.add(scrollPane, gbc);
 
     }
 
@@ -205,12 +215,7 @@ public class CSVFrame extends JFrame {
                     );
                 } else {
 
-                    JOptionPane.showOptionDialog(
-                            this, new String(("Quantidade de elementos: " + controller.getLeituras().size()).getBytes(), StandardCharsets.UTF_8),
-                            "Ok", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null
-                    );
-
-                    setSize(500, 515);
+                    setSize(500, 550);
                     showPannel.removeAll();
                     setShowPannelTable();
 

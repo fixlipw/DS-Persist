@@ -47,6 +47,7 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(337, 200);
+        setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
     }
