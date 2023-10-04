@@ -41,9 +41,9 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         gbc.gridy = 0;
         gbc.gridwidth = 5;
 
-        addOptionInfoLabel(gbc);
-        addOptionButtons(gbc);
-        addCsvMessageLabel(gbc);
+        setOptionInfoLabel(gbc);
+        setOptionButtons(gbc);
+        setCsvMessageLabel(gbc);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(337, 200);
@@ -52,13 +52,13 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         setVisible(true);
     }
 
-    private void addOptionInfoLabel(GridBagConstraints gbc) {
+    private void setOptionInfoLabel(GridBagConstraints gbc) {
         JLabel optionInfoLabel = new JLabel(new String("Selecione uma opção: ".getBytes(), StandardCharsets.UTF_8));
         optionInfoLabel.setHorizontalAlignment(JLabel.CENTER);
         add(optionInfoLabel, gbc);
     }
 
-    private void addOptionButtons(GridBagConstraints gbc) {
+    private void setOptionButtons(GridBagConstraints gbc) {
         gbc.gridwidth = 1;
         gbc.gridy++;
         JButton CSVButton = new JButton("CSV");
@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements FileStatusObserver, FileObserve
         addActionListeners(CSVButton, JSONXMLButton, ZIPButton, HASHButton);
     }
 
-    private void addCsvMessageLabel(GridBagConstraints gbc) {
+    private void setCsvMessageLabel(GridBagConstraints gbc) {
         gbc.gridwidth = 5;
         gbc.gridx = 0;
         gbc.gridy++;

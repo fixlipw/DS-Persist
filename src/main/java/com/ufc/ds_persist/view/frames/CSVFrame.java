@@ -48,7 +48,7 @@ public class CSVFrame extends JFrame {
         setIconImage(icon.getImage());
         initComponents();
         setTabbedPane();
-        setResizable(false);
+        setResizable(true);
         setVisible(true);
 
     }
@@ -186,13 +186,26 @@ public class CSVFrame extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+
+        gbc.anchor = GridBagConstraints.CENTER;
         JLabel countLabel = new JLabel("Quantidade de Elementos: " + controller.getLeituras().size());
         showPannel.add(countLabel, gbc);
+
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JLabel fileNameLabel = new JLabel("Arquivo: " + controller.getCSVFile().getName());
+        showPannel.add(fileNameLabel, gbc);
 
         JTable table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
+        gbc.gridx = 0;
         gbc.gridy++;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.gridheight = GridBagConstraints.REMAINDER;
         showPannel.add(scrollPane, gbc);
 
     }
